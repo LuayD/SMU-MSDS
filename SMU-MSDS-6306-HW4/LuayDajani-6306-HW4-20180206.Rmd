@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Homework done as per specifications with Markdown formatted as an HTML file.
 
-This work available on the Github repository:
+This work available on the Github repository: 
+Please note data for this homework from fivethirtyeight available at github: https://github.com/rudeboybert/fivethirtyeight 
 
 ## Questions 1: FiveThirtyEight Data
 
@@ -106,3 +107,10 @@ write.csv(df
           , row.names = FALSE
           )
 ```
+
+## Question 3: Codebook
+
+### 3a: Add New Repository on Github
+Available at: https://github.com/LuayD/SMU-MSDS
+
+### 3b:
