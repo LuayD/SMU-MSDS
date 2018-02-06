@@ -1,0 +1,108 @@
+---
+title: "LuayDajani-MSDS6306-HW4"
+author: "Luay Dajani"
+date: "February 6, 2018"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 6306 Assignment 4 for Luay Dajani
+
+Homework done as per specifications with Markdown formatted as an HTML file.
+
+This work available on the Github repository:
+
+## Questions 1: FiveThirtyEight Data
+
+### 1a: Setup Environment and install packages
+
+```{r 1a, echo = FALSE}
+#Print out R-Package information
+print(paste("Using", R.version.string))
+#Package Installs
+install.packages("fivethirtyeight", dependencies=TRUE, repos='http://cran.rstudio.com/')
+library(fivethirtyeight)
+```
+
+### 1b: Load 18th dataset in library
+
+```{r 1b}
+#set 18th data set into "df"
+df <- college_recent_grads
+```
+
+### 1c: Display detailed list of data sets for the package
+
+```{r 1c}
+#use vingette and print out URL
+vin <- browseVignettes(package = "fivethirtyeight")
+#vignette()
+```
+
+### 1d: Give dimentions & Column names of data frame
+
+```{r 1d}
+#print dimentions
+print(paste("The data set college_recent_grads in fivethirtyeight has"
+            , dim(df)[2]
+            , "Columns, and"
+            , dim(df)[1]
+            , "Rows."
+))
+#print column names
+print("The column names include the following:")
+cat(names(df), sep = ", ")
+```
+
+## Questions 2: FiveThirtyEight Data Summary
+
+### 2a: Write Column names and Column Number
+
+```{r 2a}
+#print column names and Number
+cat("Again, the column names include the following:\n"
+    , names(df)
+    , "\nThe numbers of column in this data set are: "  
+    , length(names(df))
+)
+```
+
+### 2b: give the unique listing for major categories in the df and frequency they show up
+
+```{r 2b}
+#print column names and Number
+library(plyr)
+major_count <- count(df, 'major_category')
+major_count
+```
+
+### 2c: Barplot of unique major categories and frequency
+
+```{r 2c}
+#create the barplot with label, title, horizontal
+par(las = 2)
+par(mar=c(5,10,4,2)) # increase y-axis margin (c(bottom, left, top, right))
+barplot(major_count$freq
+        , main="Recent College Grads & Categories for Majors"
+        , horiz=TRUE
+        , xlab="Number in each category"
+        , cex.names=0.6
+        , names.arg = major_count$major_category
+        , col=c("red","green","blue","orange","brown","purple","yellow")
+        )
+```
+
+### 2d: fivethirtyeight recent college grads -> csv file w/o row labels
+
+```{r 2d}
+#write to csv file df "recent college grads" data
+write.csv(df
+          , "fivethirtyeight_recent-college-grads.csv"
+          , row.names = FALSE
+          )
+```
