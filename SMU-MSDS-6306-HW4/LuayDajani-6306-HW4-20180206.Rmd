@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Homework done as per specifications with Markdown formatted as an HTML file.
 
-This work available on the Github repository: 
+This work available on the Github repository: https://github.com/LuayD/SMU-MSDS/tree/master/SMU-MSDS-6306-HW4
+
 Please note data for this homework from fivethirtyeight available at github: https://github.com/rudeboybert/fivethirtyeight 
 
 ## Questions 1: FiveThirtyEight Data
@@ -41,8 +42,9 @@ df <- college_recent_grads
 
 ```{r 1c}
 #use vingette and print out URL
-vin <- browseVignettes(package = "fivethirtyeight")
-#vignette()
+#vin <- browseVignettes(package = "fivethirtyeight") #could not figure this out!!! so went ahead and out the URL of interest from the packsge below:
+
+print(c("Please see more information about this topic at  http://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major"))
 ```
 
 ### 1d: Give dimentions & Column names of data frame
@@ -91,7 +93,7 @@ par(mar=c(5,10,4,2)) # increase y-axis margin (c(bottom, left, top, right))
 barplot(major_count$freq
         , main="Recent College Grads & Categories for Majors"
         , horiz=TRUE
-        , xlab="Number in each category"
+        , xlab="Frequency in each category"
         , cex.names=0.6
         , names.arg = major_count$major_category
         , col=c("red","green","blue","orange","brown","purple","yellow")
@@ -113,4 +115,13 @@ write.csv(df
 ### 3a: Add New Repository on Github
 Available at: https://github.com/LuayD/SMU-MSDS
 
-### 3b:
+### 3b: Add README.md to root 
+Done and Available at: https://github.com/LuayD/SMU-MSDS
+
+### 3c: Add nested README to and assignment folder and credit fivethirtyeight
+Done and Available at: https://github.com/LuayD/SMU-MSDS/tree/master/SMU-MSDS-6306-HW4
+
+### 3d: Link to Github:
+Done, and mentioned multiple times in this document. Relevant folders include:
+-Main root section: https://github.com/LuayD
+-Root SMU MSDS repository section: https://github.com/LuayD/SMU-MSDS 
