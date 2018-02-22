@@ -3,13 +3,15 @@ title: "LuayDajani-MSDS6306-HW4"
 author: "Luay Dajani"
 date: "February 6, 2018"
 output: 
-  html_document:
-    theme: lumen
-    keep_md: true
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+install.library("prettydoc")
+library(prettydoc)
 ```
 
 # 6306 Assignment 4 for Luay Dajani
