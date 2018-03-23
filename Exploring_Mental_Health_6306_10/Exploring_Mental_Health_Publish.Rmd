@@ -13,6 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 By Billy Hathorn - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=27271442
 
+This and all relevant code can be found at: https://github.com/LuayD/SMU-MSDS/tree/master/Exploring_Mental_Health_6306_10
+
 # VA Mental Health Clinics Analysis
 
 VA hospitals are the very cruix of maintaining competitive, relevant, and continuing healthcare for the menand women who service this country.
