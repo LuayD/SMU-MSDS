@@ -1,0 +1,157 @@
+---
+title: "Exploring Mental Health (MSU MSDS 6306 analysis Assignment 10 201803)"
+author: "Luay Dajani"
+date: "March 20, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+![](images/400px-Audie_L._Murphy_VA_Hospital,_San_Antonio,_TX_IMG_7759-billy_hathorn.jpg)
+
+By Billy Hathorn - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=27271442
+
+# VA Mental Health Clinics Analysis
+
+VA hospitals are the very cruix of maintaining competitive, relevant, and continuing healthcare for the menand women who service this country.
+
+## Purpose 
+
+(Mock) Organization's purpose of this analysis is to determine which states or areas of the country may be underserved in order to draft a recommendation into where the most appropriate locations to plan for new VA hospitals.
+
+
+## Part 1: Mental Health Clinics (Number Per State)
+
+Analysis purpose here to import data as an RDA file directrly from a datasource, clean and prune the data, then start making use of the data. THe plot will show the number of VA hospitals per state and DC (though the VS data included the offshore territories, the analysis strips those out).
+
+```{r Analysis1}
+### Analysis 1a: Load in environment data with SAMHDA
+
+# Load in RDA file
+str_RData_file <- "data/N-MHSS-2015-DS0001-data/N-MHSS-2015-DS0001-data-r.rda"
+load(str_RData_file)
+
+# Load in attributes fron column names for descriptive text
+lst_data_attributes <- attr(mh2015_puf, "variable.labels")
+
+### Analysis 1b: List the state abreviations represented in the data
+
+library(plyr)
+# Do a 2 de-reference to get the count in a DF then get the x column, then cast factor to character then dlee spaces
+# taking out spaces from *ref1
+vec_state_abbrev <- gsub(" ", "", as.character(count(mh2015_puf$LST)$x))
+
+### Analysis 1c: Include listings of only states & DC (exclude offland terriories) from initial DF
+
+# offland territories *ref2
+vec_territory_abbrev <- c("AS", "FM", "GU", "MH", "MP", "PW", "PR", "VI")
+
+# create count of states using filter deriving mainland states vector and number of centers, 
+# just find where the element does not match the filter of not wanted territories and use count *ref#3
+dfm_VA_per_state <- count(mh2015_puf[!is.element(gsub(" ", "", as.character(mh2015_puf$LST)), vec_territory_abbrev),]$LST)
+#change the colnames to something readable
+colnames(dfm_VA_per_state) <- c("state", "number_va_hopitals")
+#add column with orinal numbers to randomly color bars in subsequent plot
+dfm_VA_per_state["color_code"] <- 1:length(dfm_VA_per_state$state)
+
+### Analysis 1d: ggplot barchart of filtered dataset
+library(ggplot2)
+library(plyr)
+
+# plot using bar and reordering so A-Z state abbrevs first *ref#4, also played with geor_bar colors *ref#5,
+# also not showing legend *ref#6
+ggplot(dfm_VA_per_state, aes(reorder(state, desc(state)), number_va_hopitals)) +
+  geom_bar(stat="identity", aes(fill=color_code), width = .8, show.legend = FALSE) +
+  coord_flip() + #flip graph
+  ggtitle("Number of VA Hospitals per State" ,
+          subtitle = "Including US States and DC, not off mainland territorries") +
+  xlab("States") +
+  ylab("Number of Hospitals") +
+  scale_fill_gradient(low="blue", high="red") +
+  theme(plot.title = element_text(hjust = 0.5), 
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.text.y = element_text(size = 5)
+        )
+```
+
+## Part 2: Cleaning Data and Introducing new features
+
+This part allows for the merging and basic operations on the data to allow a different view.  The plot shows how many VA hospitals are available per thousand square mile, and an indication per defined region (Northeast, South, Midwest, and West).  In this case the data will show that there is an interesting concentration of hopitals within a certain region.
+
+```{r Analysis2}
+### Analysis 2a: Load in state information data and see issues with merging
+
+# read in file data
+str_state_data_file <- "data/statesize.csv"
+dfm_state_data <- read.csv(str_state_data_file, stringsAsFactors = FALSE)
+dfm_merged_VA_state_data <-  merge(x = dfm_VA_per_state, y = dfm_state_data, by.x = "state", by.y = "Abbrev")
+# The abbreiations do not match as either one is a Factor or has etraneous spaces.  Will clean that out and concert to string
+# show current merged state (empty)
+head(dfm_merged_VA_state_data)
+# show structure
+str(dfm_VA_per_state)
+
+### Analysis 2b: Fix issue and merge
+
+# use gsub function to delete spaces and change to string (character)
+dfm_VA_per_state$state <- gsub(" ", "", as.character(dfm_VA_per_state$state))
+# re-show structure
+str(dfm_VA_per_state)
+#re-merge
+dfm_merged_VA_state_data <-  merge(x = dfm_VA_per_state, y = dfm_state_data, by.x = "state", by.y = "Abbrev")
+# re-show current merged state
+head(dfm_merged_VA_state_data)
+
+### Analysis 2c: Calculate VA hospitals per square mile
+
+# Add new variable (column) to the merged data frame showing the VA calculated hospitals per sq mile
+dfm_merged_VA_state_data$HospitalsPerKSqMile <- dfm_merged_VA_state_data$number_va_hopitals / (dfm_merged_VA_state_data$SqMiles / 1000)
+head(dfm_merged_VA_state_data)
+
+### Analysis 2d: Plot VAs per square 1000 miles 
+
+# Copy plot info from 1d, reorder the bars to show by descending order from top and fil per region
+ggplot(dfm_merged_VA_state_data, aes(reorder(state, HospitalsPerKSqMile), HospitalsPerKSqMile)) +
+  geom_bar(stat="identity", aes(fill=Region), width = .8, show.legend = TRUE) +
+  coord_flip() + #flip graph
+  ggtitle("Number of VA Hospitals Per Thousand Square Miles per State" ,
+          subtitle = "Including US States and DC, not off mainland territorries") +
+  xlab("States") +
+  ylab("Number of Hospitals Per Thousand Square Miles") +
+  theme(plot.title = element_text(hjust = 0.5), 
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.text.y = element_text(size = 5)
+  )
+
+### Analysis 2e: Analyse: patters, region distribution, Advice given
+# See conclustion below:
+```
+
+## Conclusion:
+
+Though there is still more real and relevant analysis that could be made such as VA hospitals vs general population or population of veterans per state, the patterns tend to show that more bigger and presumably more populous states like California and New York do have a high amount of VA hospitals, but others like Texas comparitively do not.  Nevertheless, comparing the number of VA hospitals per square mile, there is a trend where the northeast region has the highest number of hospitals followed by the Midwest, then the west, followed by the south with the least.  The VA System was oficially started in 1930 by executive order from President Herbert Hoover to create a Veterans Administration (**ref 7**) but had roots since the founding of the country in 1776 , which were strengthened after the Civil War.  This may have a reason why "older" states have a higher density.  Nevertheless the highest population of veterans live in Calfornia, Texas, and Florida (**ref 8**), being the most populous states.  Advice for expansion, looking at the data, more emphasis should be put on exanding in the underserved populations generally in the south.
+
+## Notes and Disclaimers: 
+
+Please note that data used in this analysis are from the Substance Abuse and Mental Health Data Archive, which is freely availailable at: https://datafiles.samhsa.gov/study-dataset/national-mental-health-services-survey-2015-n-mhss-2015-ds0001-nid17098  which are regulated by terms and conditions: https://www.datafiles.samhsa.gov/info/terms-use-nid3422. Disclaimer: Though this analysis is derived from real data, it is meant to be a mock assignment and hence is missing many other potential confouding and relevant variables, so not meant to endorse any paticular position.
+
+## References from comments in the code and text:
+
+##### 1: Remove spaces from text https://stackoverflow.com/questions/5992082/how-to-remove-all-whitespace-from-a-string
+##### 2: US state & territory abbreviations: http://www.stateabbreviations.us/
+##### 3: Remove a particular group of elements in a vector? https://stackoverflow.com/questions/11672227/remove-a-particular-group-of-elements-in-a-vector
+##### 4: r - reverse order of discrete y axis in ggplot2 https://stackoverflow.com/questions/28391850/r-reverse-order-of-discrete-y-axis-in-ggplot2
+##### 5: Fill gradient color not working with geom_bar of ggplot2 https://stackoverflow.com/questions/37343114/fill-gradient-color-not-working-with-geom-bar-of-ggplot2
+##### 6: removing legend ggplot 2.2: https://stackoverflow.com/questions/35618260/removing-legend-ggplot-2-2
+##### 7: History - VA History: https://www.va.gov/about_va/vahistory.asp
+##### 8: What each state’s veteran population looks like, in 10 maps: https://www.washingtonpost.com/blogs/govbeat/wp/2014/11/11/what-each-states-veteran-population-looks-like-in-10-maps/?utm_term=.6d1e4b574b25
+
+
+#### Environment/Session Info
+
+```{r sessioninfo, include=TRUE, echo=TRUE}
+#Session information
+sessionInfo()
+```
