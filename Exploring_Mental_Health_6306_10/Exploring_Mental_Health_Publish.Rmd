@@ -7,6 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# Install Libraries
+# install.packages("plyr")
+# install.packages("ggplot2")
 ```
 
 ![](images/400px-Audie_L._Murphy_VA_Hospital,_San_Antonio,_TX_IMG_7759-billy_hathorn.jpg)
