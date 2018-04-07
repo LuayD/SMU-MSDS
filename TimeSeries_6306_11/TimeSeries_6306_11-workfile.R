@@ -49,7 +49,8 @@ abline(v=1997, col="red", lwd = 2)
 ts_maxtemp <- maxtemp
 
 # Autoplot maxtemp data using example as per help page
-autoplot(ts_maxtemp)
+autoplot(ts_maxtemp, main = "Max Temperate for Moorabbin Airport Melbourne",
+         xlab = "Time Period", ylab = "Temperature (Celcius")
 
 ## Part 2b. subset data after year 1990
 ts_maxtemp_1990 <- window(ts_maxtemp, start = 1990)
@@ -74,9 +75,6 @@ lines(fitted(lst_maxtemp_ses_1990_2021), col = "blue", type = "o")
 # overlay 2016-2021 predictions with points
 lines(lst_maxtemp_ses_1990_2021$mean, col = "blue", type = 'o')
 
-# SES model AICc
-lst_maxtemp_ses_1990_2021$model$aicc
-
 ## Part 2d. Use Damped Holt's Linear Trend
 lst_maxtemp_holt_1990_2021 <- holt(ts_maxtemp_1990, h = 5, damped = TRUE)
 
@@ -94,8 +92,10 @@ lines(fitted(lst_maxtemp_holt_1990_2021), col = "blue", type = 'o')
 # overlay 2016-2021 predictions with points
 lines(lst_maxtemp_holt_1990_2021$mean, col = "blue", type = 'o')
 
-# SES model AICc
-lst_maxtemp_holt_1990_2021$model$aicc
+# AICc comparion for models
+cat("AICs for SES model", lst_maxtemp_ses_1990_2021$model$aicc, "\n")
+cat("AICs for HW model", lst_maxtemp_holt_1990_2021$model$aicc, "\n")
+cat("The SES model has the lower AICc", "\n")
 
 ## Analysis 3: Wands that choose the wizard
 
@@ -122,7 +122,8 @@ ts_combined <- xts(dfm_combined[c("ollivander","gregorovitch")],
 
 
 # plot the dygrpah
-dygraph(ts_combined, main="Birth rates", ylab="Wands Sold per Wand Maker", xlab="Year") %>% 
+dygraph(ts_combined, main="Wands Sold per Wand Maker", ylab="Wands Sold", 
+        xlab="Year (Shaded Area When He who should not be named active)") %>%
   dySeries("ollivander", label = "Ollivander", color = "green") %>%
   dySeries("gregorovitch", label = "Gregorovitch", color = "red") %>%
   dyOptions(stackedGraph = TRUE) %>%
